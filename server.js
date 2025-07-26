@@ -9,10 +9,21 @@ app.use(express.json());
 
 // Import your routes
 const userRoutes = require('./routes/userRoutes');
-// ... Import other routers as you make them
+const customerRoutes = require('./routes/customerRoutes');
+const productRoutes  = require('./routes/productRoutes');
+const branchRoutes   = require('./routes/branchRoutes');
+const orderRoutes    = require('./routes/orderRoutes');
+// ...and other routes as you create them
+
+app.use('/api/customers', customerRoutes);
+app.use('/api/products', productRoutes);
+app.use('/api/branches', branchRoutes);
+app.use('/api/orders', orderRoutes);
+app.use('/api/users', userRoutes);
+// ...etc
+
 
 // Use the routers
-app.use('/api/users', userRoutes);
 // ... app.use('/api/products', productRoutes), etc.
 
 mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
