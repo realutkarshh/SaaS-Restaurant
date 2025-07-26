@@ -1,15 +1,31 @@
 const User = require('../models/User');
+const bcrypt = require('bcryptjs'); // Install: npm install bcryptjs
 
 // Create a new user (admin/cashier/staff)
 exports.createUser = async (req, res) => {
   try {
-    const user = new User(req.body); // In production, hash password & validate input!
+    const userData = { ...req.body };
+    
+    // Hash the password if provided
+    if (userData.password) {
+      const saltRounds = 10;
+      userData.passwordHash = await bcrypt.hash(userData.password, saltRounds);
+      delete userData.password; // Remove plain password
+    }
+    
+    const user = new User(userData);
     await user.save();
-    res.status(201).json({ message: 'User created!', user });
+    
+    // Don't return password hash in response
+    const userResponse = user.toObject();
+    delete userResponse.passwordHash;
+    
+    res.status(201).json({ message: 'User created!', user: userResponse });
   } catch (err) {
     res.status(400).json({ error: err.message });
   }
 };
+
 
 // Get all users
 exports.getAllUsers = async (req, res) => {
